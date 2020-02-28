@@ -31,18 +31,20 @@ int leftSpeed,
 	rightSpeed,
 	speed_correct,
 	speed_var,
-	proportional_term = 1,
-	derivative_term = 2;
+	proportional_term = 3,
+	derivative_term = 1;
 
 int16_t lastError[5] = {0, 0, 0, 0, 0};
 
+uint32_t current_time, check_time = 0;
 
 void calibrateSensors() {
 	lcd.clear();
 
 	delay(1000);
-	for(uint16_t i = 0; i < 120; i++) {
-		if (i > 30 && i <= 90) {
+	check_time = millis();
+	while (millis() - check_time < 3000) {;
+		if (millis() - check_time > 500 && millis() - check_time < 2000) {
 			motor.setSpeeds(-200, 200);
 		} else {
 			motor.setSpeeds(200, -200);
@@ -59,7 +61,6 @@ void setup() {
 	lcd.gotoXY(0, 1);
 	lcd.print("to calibrate");
 	buttonA.waitForButton();
-	
 	lineSensors.initFiveSensors();
 	calibrateSensors();
 	lcd.clear();

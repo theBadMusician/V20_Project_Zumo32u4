@@ -27,7 +27,7 @@
 #include <BlynkSimpleEsp32.h>
 
 
-char auth[] = "********************************"
+char auth[] = "********************************";
 char ssid[] = "YOUR_SSID";
 char pass[] = "YOUR_PASSWORD";
 
