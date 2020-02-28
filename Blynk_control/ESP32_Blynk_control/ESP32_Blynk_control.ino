@@ -62,15 +62,15 @@ void setup() {
 	delay(500);
 	
 	// Serial for debugging with PC.
-	if (DEBUGGING) {
+	#if DEBUGGING
 		Serial.begin(9600);
 		delay(500);
-	}
-	if (NTNU_SERVER) {
+	#endif
+	#if NTNU_SERVER
 		Blynk.begin(auth, ssid, pass, IPAddress(129,241,2,116), 8080);
-	} else {
+	#else
 		Blynk.begin(auth, ssid, pass, "blynk-cloud.com", 80);
-	}
+	#endif
 }
 
 void loop()
@@ -85,7 +85,7 @@ void loop()
 	
 	Serial2.write((byte*)&DATA, sizeof(data_package));
 	
-	if (DEBUGGING) {
+	#if DEBUGGING
 			if (DATA.y_val < 128) {
 			LMS = map(DATA.y_val, 128, 0, 0, -max_speed);
 			RMS = map(DATA.y_val, 128, 0, 0, -max_speed);
@@ -125,5 +125,5 @@ void loop()
 		Serial.print(LMS);
 		Serial.print("   ");
 		Serial.println(RMS);
-	}
+	#endif
 }

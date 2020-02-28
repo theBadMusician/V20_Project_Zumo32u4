@@ -43,10 +43,10 @@ void setup() {
 	delay(500);
 	
 	// Serial debugging with PC.
-	if (DEBUGGING) {
+	#if DEBUGGING
 		Serial.begin(9600);
 		delay(500);
-	}
+	#endif
 	
 }
 
@@ -92,7 +92,7 @@ void loop() {
 	}
 	motors.setSpeeds(LMS, RMS);
 
-	if (DEBUGGING) {
+	#if DEBUGGING
 		Serial.println(String(String(LMS) + String("   ") + String(RMS)));
-	}
+	#endif
 }
