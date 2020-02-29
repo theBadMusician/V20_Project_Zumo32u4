@@ -10,7 +10,7 @@
 // For better sampling the program uses five points error measurements.
 // This could increased/decreased for better definition/more noise reduction. 
 //
-// Version 2.2 28/02/2020
+// Version 2.3 28/02/2020
 // 2020, Benjaminas Visockis
 //******************************************************************************
 
