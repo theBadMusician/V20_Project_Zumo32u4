@@ -10,7 +10,7 @@
 // For better sampling the program uses five points error measurements.
 // This could increased/decreased for better definition/more noise reduction. 
 //
-// Version 2.1 28/02/2020
+// Version 2.3.1 02/03/2020
 // 2020, Benjaminas Visockis
 //******************************************************************************
 
@@ -18,8 +18,7 @@
 #include <Zumo32U4.h>
 #include <stdio.h>
 
-#define DEBUG 0 		// Sett til sant for minimal debugging.
-#define LOGCCONTROL 0	// Velge mellom logaritmisk eller eksponentiel fartskontroll.
+#define DEBUG 0 // Sett til sant for debugging.
 
 Zumo32U4LCD 				lcd;
 Zumo32U4ButtonA 			buttonA;
@@ -32,11 +31,11 @@ uint16_t	lineSensorValues[NUM_SENSORS];
 bool 		useEmitters = true;
 uint8_t 	selectedSensorIndex = 0;
 
-// Disse verdiene kan eksperimenteres med og kalibreres bedre.
-#define  	proportional_term  0.3  //0.5 funker bra, 0.3 enda bedre, 0.25 også, 0.1 starter å sakte ned.
-#define		derivative_term  9.0
-#define		sample_rate 1
-#define		cc_definition 10000 // 1500, 3000, 10000 funker bra, høyere verdier gjør at dronen sakter.
+// Disse verdiene kan eksperimenteres med og de kan kalibreres bedre.
+#define  	proportional_term  0.3  // 0.5 funker bra, 0.3 enda bedre, 0.25 også, 0.1 starter å sakte ned.
+#define		derivative_term  9.0	// Ble ikke testet så mye, men 9.0 ser ut til å funke godt.
+#define		sample_rate 1			// Hvor ofte avvik måles, funker bra ved 1 us. Jo høyere tallet, jo bedre støyfiltrering, men også mer unøyaktighet.
+#define		cc_definition 10000 	// 1500, 3000, 10000 funker bra, høyere verdier gjør at dronen sakter ned.
 #define		cc_speed 300
 
 // En array for avvik + en sjekk for hvor mange elementer i arrayen.
@@ -115,15 +114,13 @@ void loop() {
 	// Fartskontrollsystemet. Jo lengere unna linja dronen peker, jo saktere kjør den.
 	// Det gir bedre tid på å utføre vinkeljusteringer.
 	uint16_t cruise_control = map(abs(error[0]), 0, 400, cc_definition, 0);
-	#if LOGCCONTROL
-		cruise_control = log(cruise_control + 1)/log(cc_definition) * cc_speed;
-	#else
-		cruise_control = pow(cruise_control, 2)/pow(cc_definition, 2) * cc_speed;
-	#endif
 
+	// Gjøres om til eksponentiel fartskontroll.
+	cruise_control = pow(cruise_control, 2)/pow(cc_definition, 2) * cc_speed;
+	
 	// Kalkulasjoner for PD-regulator. Avviket ganges med en konstant verdi i første parantes.
 	// Snittendringsrate mellom nåværende avvik og et førrige avvik finnes i den andre parantes. Så adderes dem.
-	int16_t turn_control = (error[0] * proportional_term) + (derivative_term * ((error[0] - error[5]) / num_of_errors));
+	int16_t turn_control = round((error[0] * proportional_term) + (derivative_term * ((error[0] - error[5]) / num_of_errors)));
 
 	// Alle regulatorene summeres.
 	left_speed = 100 + cruise_control + turn_control;
