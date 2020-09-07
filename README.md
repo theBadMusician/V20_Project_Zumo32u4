@@ -1,6 +1,6 @@
 #!DEPRECATED
 
-##QR-code for simple Blynk control app interface
+#QR-code for simple Blynk control app interface
 
 ![alt text][QRcode]
 
